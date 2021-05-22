@@ -68,12 +68,28 @@ namespace ShoppingCart.Services
                     var productDetail = new ProductDetail();
                     productDetail.Product = item.Product;
                     productDetail.Quantity = item.Quantity;
-                    if (string.IsNullOrEmpty(product.DiscountType))
-                    {
-                        productDetail.Price =  item.Quantity * product.Price;
-                    }
+                    productDetail.Price = product.Price;
+                    
 
                     //ProcessDiscountLogic
+                    IDiscount discount = new NoDiscount();
+                    switch(product.DiscountType)
+                    {
+                        case "DiscountA":
+                            discount = new DiscountA();
+                            break;
+                        case "DiscountB":
+                            discount = new DiscountB();
+                            break;
+                        case "DiscountCD":
+                            discount = new DiscountCD();
+                            break;
+                        default:
+                            break;
+                    }
+
+                    productDetail.Price = discount.ApplyDiscount(productDetail);
+
                     productDetails.Add(productDetail);
                 }
             }

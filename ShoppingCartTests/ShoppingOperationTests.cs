@@ -73,6 +73,48 @@ namespace ShoppingCartTests
         }
 
         [Fact]
+        public void Test_ShoppingOperation_WhenDiscountAIsApplied_DisplayDiscountedPrice()
+        {
+            var mockShoppingRepository = new Mock<IShoppingRepository>();
+            var shoppingOperation = new ShoppingOperation(mockShoppingRepository.Object);
+
+            var cartItems = new List<Cart>();
+            cartItems.Add(new Cart { Product = "A", Quantity = 3 });
+            cartItems.Add(new Cart { Product = "B", Quantity = 1 });
+
+            var products = new List<Product>();
+            products.Add(new Product { Name = "A", Price = 50, DiscountType = "DiscountA" });
+            products.Add(new Product { Name = "B", Price = 30, DiscountType = null });
+
+            var productDetails = shoppingOperation.GetProductDetails(cartItems, products);
+
+            Assert.True(productDetails.Count == 2);
+            Assert.True(productDetails.First(x => x.Product == "A").Price == 130);
+            Assert.True(productDetails.First(x => x.Product == "B").Price == 30);
+        }
+
+        [Fact]
+        public void Test_ShoppingOperation_WhenDiscountBIsApplied_DisplayDiscountedPrice()
+        {
+            var mockShoppingRepository = new Mock<IShoppingRepository>();
+            var shoppingOperation = new ShoppingOperation(mockShoppingRepository.Object);
+
+            var cartItems = new List<Cart>();
+            cartItems.Add(new Cart { Product = "A", Quantity = 5 });
+            cartItems.Add(new Cart { Product = "B", Quantity = 2 });
+
+            var products = new List<Product>();
+            products.Add(new Product { Name = "A", Price = 50, DiscountType = "DiscountA" });
+            products.Add(new Product { Name = "B", Price = 30, DiscountType = "DiscountB" });
+
+            var productDetails = shoppingOperation.GetProductDetails(cartItems, products);
+
+            Assert.True(productDetails.Count == 2);
+            Assert.True(productDetails.First(x => x.Product == "A").Price == 230);
+            Assert.True(productDetails.First(x => x.Product == "B").Price == 45);
+        }
+
+        [Fact]
         public void Test_ShoppingOperation_WhenCartIsSelected_GetTotalPrice()
         {
             var mockShoppingRepository = new Mock<IShoppingRepository>();
